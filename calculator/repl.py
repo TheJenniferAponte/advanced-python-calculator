@@ -47,3 +47,18 @@ class REPL:
 
 if __name__ == "__main__":
     REPL().start()
+
+
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+log_level = os.getenv("LOG_LEVEL", "INFO")
+log_file = os.getenv("LOG_FILE", "calculator.log")
+
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    filename=log_file,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
