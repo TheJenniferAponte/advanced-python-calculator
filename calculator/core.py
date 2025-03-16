@@ -27,6 +27,7 @@ class Calculator:
 
 
 
+
 def add(self, a, b):
     # LBYL: Check before operation
     if not (isinstance(a, (int, float)) and isinstance(b, (int, float))):
