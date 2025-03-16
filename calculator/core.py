@@ -20,3 +20,28 @@ class Calculator:
         return result
 
     # Add multiply and divide similarly
+
+
+
+
+
+
+
+def add(self, a, b):
+    # LBYL: Check before operation
+    if not (isinstance(a, (int, float)) and isinstance(b, (int, float))):
+        logger.error(f"Invalid input for add: {a}, {b}")
+        raise ValueError("Inputs must be numbers")
+    result = float(a) + float(b)
+    self.history.add_record(f"{a} + {b}", result)
+    return result
+
+def subtract(self, a, b):
+    # EAFP: Try and catch
+    try:
+        result = float(a) - float(b)
+        self.history.add_record(f"{a} - {b}", result)
+        return result
+    except ValueError as e:
+        logger.error(f"Invalid input for subtract: {e}")
+        raise
