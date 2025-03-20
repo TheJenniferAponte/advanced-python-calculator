@@ -6,7 +6,8 @@ logger = logging.getLogger(__name__)
 
 class HistoryManager:
     def __init__(self):
-        self.df = pd.DataFrame(columns=["operation", "result"])
+        # Initialize with explicit dtypes to avoid FutureWarning
+        self.df = pd.DataFrame({"operation": pd.Series(dtype="str"), "result": pd.Series(dtype="float")})
         self.filepath = "history.csv"
 
     def add_record(self, operation, result):
@@ -26,7 +27,7 @@ class HistoryManager:
             logger.warning("No history file found")
 
     def clear(self):
-        self.df = pd.DataFrame(columns=["operation", "result"])
+        self.df = pd.DataFrame({"operation": pd.Series(dtype="str"), "result": pd.Series(dtype="float")})
         logger.info("History cleared")
 
     def delete(self):
