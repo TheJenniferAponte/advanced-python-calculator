@@ -1,3 +1,4 @@
+import pytest
 from calculator.plugins import load_plugins
 from calculator.plugins.basic_operations import AddCommand
 

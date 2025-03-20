@@ -1,8 +1,18 @@
 import logging
 from calculator.core import Calculator
 from calculator.plugins import load_plugins
+import os
+from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO)
+load_dotenv()
+log_level = os.getenv("LOG_LEVEL", "INFO")
+log_file = os.getenv("LOG_FILE", "calculator.log")
+
+logging.basicConfig(
+    level=getattr(logging, log_level),
+    filename=log_file,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 class REPL:
@@ -10,6 +20,11 @@ class REPL:
         self.calculator = Calculator()
         self.plugins = load_plugins()
         self.running = True
+        # Map user-friendly command names to plugin instances
+        self.command_map = {
+            "add": self.plugins["addcommand"],
+            "subtract": self.plugins["subtractcommand"]
+        }
 
     def start(self):
         logger.info("Starting REPL")
@@ -32,14 +47,14 @@ class REPL:
 
     def show_menu(self):
         print("Available commands:")
-        for cmd in self.plugins.keys():
+        for cmd in self.command_map.keys():
             print(f"- {cmd}")
         print("- history (load/save/clear/delete)")
         print("- exit")
 
     def execute_command(self, cmd_name, args):
-        if cmd_name in self.plugins:
-            self.plugins[cmd_name].execute(self.calculator, *args)
+        if cmd_name in self.command_map:
+            self.command_map[cmd_name].execute(self.calculator, *args)
         elif cmd_name in ["load", "save", "clear", "delete"]:
             getattr(self.calculator.history, cmd_name)(*args)
         else:
@@ -47,18 +62,3 @@ class REPL:
 
 if __name__ == "__main__":
     REPL().start()
-
-
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-log_level = os.getenv("LOG_LEVEL", "INFO")
-log_file = os.getenv("LOG_FILE", "calculator.log")
-
-logging.basicConfig(
-    level=getattr(logging, log_level),
-    filename=log_file,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
