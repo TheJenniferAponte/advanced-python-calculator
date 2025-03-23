@@ -1,8 +1,8 @@
 import logging
-from calculator.core import Calculator
-from calculator.plugins import load_plugins
 import os
 from dotenv import load_dotenv
+from calculator.core import Calculator
+from calculator.plugins import load_plugins
 
 load_dotenv()
 log_level = os.getenv("LOG_LEVEL", "INFO")
@@ -20,11 +20,16 @@ class REPL:
         self.calculator = Calculator()
         self.plugins = load_plugins()
         self.running = True
-        # Map user-friendly command names to plugin instances
         self.command_map = {
-            "add": self.plugins["addcommand"],
-            "subtract": self.plugins["subtractcommand"]
+            "add": self.plugins.get("addcommand"),
+            "subtract": self.plugins.get("subtractcommand"),
+            "multiply": self.plugins.get("multiplycommand"),
+            "divide": self.plugins.get("dividecommand")
         }
+        # Log loaded commands for debugging
+        logger.info(f"Loaded commands: {list(self.command_map.keys())}")
+        for cmd, obj in self.command_map.items():
+            logger.info(f"{cmd}: {obj}")
 
     def start(self):
         logger.info("Starting REPL")
@@ -53,11 +58,19 @@ class REPL:
         print("- exit")
 
     def execute_command(self, cmd_name, args):
-        if cmd_name in self.command_map:
-            self.command_map[cmd_name].execute(self.calculator, *args)
+        logger.info(f"Executing command: {cmd_name} with args: {args}")
+        if cmd_name in self.command_map and self.command_map[cmd_name] is not None:
+            try:
+                result = self.command_map[cmd_name].execute(self.calculator, *args)
+                if result is not None:
+                    print(f"Result: {result}")
+            except (ValueError, ZeroDivisionError) as e:
+                logger.error(f"Command error: {e}")
+                print(f"Error: {e}")
         elif cmd_name in ["load", "save", "clear", "delete"]:
             getattr(self.calculator.history, cmd_name)(*args)
         else:
+            logger.warning(f"Unknown command: {cmd_name}")
             print("Unknown command. Type 'menu' for options.")
 
 if __name__ == "__main__":
