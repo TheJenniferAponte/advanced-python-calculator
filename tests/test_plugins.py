@@ -9,7 +9,7 @@ from calculator.plugins.basic_operations import (
 
 def test_load_plugins():
     plugins = load_plugins()
-    assert "addcommand" in plugins
+    assert "addcommand" in plugins  # Check raw plugin key
     assert "subtractcommand" in plugins
     assert "multiplycommand" in plugins
     assert "dividecommand" in plugins
