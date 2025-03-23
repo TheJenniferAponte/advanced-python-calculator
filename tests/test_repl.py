@@ -54,7 +54,7 @@ def test_repl_start_exit(monkeypatch, capsys):
 
 def test_repl_error_handling(monkeypatch, capsys):
     repl = REPL()
-    monkeypatch.setattr("sys.stdin", StringIO("add 1\n"))
+    monkeypatch.setattr("sys.stdin", StringIO("add 1\nexit\n"))
     repl.start()
     captured = capsys.readouterr()
     assert "Error: Add requires 2 arguments" in captured.out
